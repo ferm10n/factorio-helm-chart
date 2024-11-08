@@ -1,0 +1,41 @@
+{{ if .Values.dydns.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name:  {{ include "factorio.fullname" . }}-dydns
+  labels:
+    {{- include "factorio.labels" . | nindent 4 }}
+spec:
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: {{ .Values.dydns.activeDeadlineSeconds | default 60 }}
+      backoffLimit: {{ .Values.dydns.backoffLimit | default 3 }}
+      completions: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: dydns
+              image: "{{ .Values.dydns.image }}"
+              command: [ /bin/sh ]
+              args:
+                - -c
+                - |
+                  {{- .Values.dydns.script | nindent 18 }}
+              {{- if or .Values.dydns.env .Values.dydns.secretEnv }}
+              env:
+                {{- if .Values.dydns.env }}
+                {{- toYaml .Values.dydns.env | nindent 16 }}
+                {{- end }}
+                {{- if .Values.dydns.secretEnv }}
+                {{ range $key, $val := .Values.dydns.secretEnv -}}
+                - name: {{ $key }}
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "factorio.fullname" $ }}-dydns
+                      key: {{ $key | quote }}
+                {{- end }}
+                {{- end }}
+              {{- end }}
+  schedule: "{{ .Values.dydns.schedule }}"
+{{- end }}

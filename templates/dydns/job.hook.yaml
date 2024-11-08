@@ -1,0 +1,38 @@
+
+{{- if .Values.dydns.hooks.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "factorio.fullname" . }}-dydns-hook
+  labels:
+    {{- include "factorio.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+spec:
+  template:
+    spec:
+      containers:
+        - name: dydns
+          image: "{{ .Values.dydns.image }}"
+          command: [ /bin/sh ]
+          args:
+            - -c
+            - |
+              {{- .Values.dydns.script | nindent 14 }}
+          {{- if or .Values.dydns.env .Values.dydns.secretEnv }}
+          env:
+            {{- if .Values.dydns.env }}
+            {{- toYaml .Values.dydns.env | nindent 12 }}
+            {{- end }}
+            {{- if .Values.dydns.secretEnv }}
+            {{ range $key, $val := .Values.dydns.secretEnv -}}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "factorio.fullname" $ }}-dydns
+                  key: {{ $key | quote }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+      restartPolicy: OnFailure
+{{- end }}

@@ -1,0 +1,35 @@
+{{- if .Values.filebrowser.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "factorio.fullname" . }}-filebrowser
+  labels:
+    {{- include "factorio.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "factorio.name" . }}-filebrowser
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ include "factorio.name" . }}-filebrowser
+    spec:
+      containers:
+        - name: filebrowser
+          image: {{ .Values.filebrowser.image }}
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: factorio-data
+              mountPath: /srv
+          command:
+            - /filebrowser
+            - --noauth
+      volumes:
+        - name: factorio-data
+          persistentVolumeClaim:
+            claimName: {{ include "factorio.pvcName" . }}
+{{- end }}

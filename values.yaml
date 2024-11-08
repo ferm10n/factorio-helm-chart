@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=./values.schema.json
+
+factorio:
+  image:
+    repository: factoriotools/factorio
+    tag: latest
+  service:
+    nodePorts:
+      factorio: 31088
+      rcon: 30261
+  resources:
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+  persistence:
+    # pvcName: factorio-factorio-pvc # optional
+    create:
+      enabled: true
+      size: 2Gi
+      storageClass: ""
+  env:
+    LOAD_LATEST_SAVE: 'true'
+    # SAVE_NAME: ''
+filebrowser:
+  image: filebrowser/filebrowser:v2
+  enabled: true
+  nodePort: 30080
+dydns:
+  enabled: true
+  image: curlimages/curl@sha256:4bfa3e2c0164fb103fb9bfd4dc956facce32b6c5d47cc09fcec883ce9535d5ac
+  # backoffLimit: 3
+  # activeDeadlineSeconds: 60
+  script: |
+    set -e
+    ip=$(curl -s https://dynamicdns.park-your-domain.com/getip)
+    echo "Current IP: $ip"
+    response=$(curl -s "https://dynamicdns.park-your-domain.com/update?host=$DYDNS_HOST&domain=$DYDNS_DOMAIN&password=$DYDNS_PASSWORD&ip=$ip")
+    echo $response
+    echo response can be 200 even on failure so we check the response body
+    echo $response | grep '<ErrCount>0</ErrCount>'
+    echo done $? # show result from prev command.
+  env:
+    - name: DYDNS_HOST
+      value: '' # example: factorio
+    - name: DYDNS_DOMAIN
+      value: '' # example: mysite.com
+  secretEnv:
+    DYDNS_PASSWORD: ''
+  schedule: 0 */6 * * *
+  hooks:
+    enabled: true

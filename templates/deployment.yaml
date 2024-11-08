@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "factorio.fullname" . }}
+  labels:
+    {{- include "factorio.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "factorio.name" . }}-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ include "factorio.name" . }}-server
+    spec:
+      containers:
+        - name: factorio
+          image: "{{ .Values.factorio.image.repository }}:{{ .Values.factorio.image.tag }}"
+          ports:
+            - containerPort: 34197
+              protocol: UDP
+            - containerPort: 27015
+              protocol: TCP
+          env:
+            {{- range $key, $val := .Values.factorio.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+          volumeMounts:
+            - name: factorio-data
+              mountPath: /factorio
+      volumes:
+        - name: factorio-data
+          persistentVolumeClaim:
+            claimName: {{ include "factorio.pvcName" . }}

@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+name: factorio
+apiVersion: v2
+version: 1.0.0
+description: A Helm chart for deploying a Factorio server with a filebrowser web ui for managing saves, mods, and settings.
+type: application
+appVersion: 2.0.14
+
+keywords:
+  - factorio
+  - game

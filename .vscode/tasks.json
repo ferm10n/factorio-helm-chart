@@ -1,0 +1,34 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Helm Deploy/Upgrade",
+      "type": "shell",
+      "command": "helm upgrade --install factorio ./",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Helm Template",
+      "type": "shell",
+      "command": "helm template --debug factorio ./ | code -",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Port forward filebrowser",
+      "type": "shell",
+      "command": "kubectl port-forward svc/factorio-filebrowser 8080:80",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    }
+  ]
+}

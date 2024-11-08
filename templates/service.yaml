@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "factorio.fullname" . }}
+  labels:
+    {{- include "factorio.labels" . | nindent 4 }}
+spec:
+  type: NodePort
+  ports:
+    - port: 34197
+      targetPort: 34197
+      nodePort: {{ .Values.factorio.service.nodePorts.factorio }}
+      protocol: UDP
+      name: factorio
+    - port: 27015
+      targetPort: 27015
+      nodePort: {{ .Values.factorio.service.nodePorts.rcon }}
+      name: factorio-rcon
+  selector:
+    app: {{ include "factorio.name" . }}

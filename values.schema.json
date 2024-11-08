@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "factorio": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            }
+          },
+          "required": ["repository", "tag"]
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "nodePorts": {
+              "type": "object",
+              "properties": {
+                "factorio": {
+                  "type": "integer"
+                },
+                "rcon": {
+                  "type": "integer"
+                }
+              },
+              "required": ["factorio", "rcon"]
+            }
+          },
+          "required": ["nodePorts"]
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"]
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"]
+            }
+          }
+        },
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "create": {
+              "type": "object",
+              "properties": {
+                "size": {
+                  "type": "string"
+                },
+                "storageClass": {
+                  "type": "string"
+                },
+                "enabled": {
+                  "type": "boolean"
+                }
+              },
+              "required": ["size", "storageClass", "enabled"]
+            }
+          }
+        },
+        "env": {
+          "type": "object",
+          "properties": {
+            "LOAD_LATEST_SAVE": {
+              "type": "string"
+            },
+            "SAVE_NAME": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": ["image", "service", "resources", "persistence", "env"]
+    },
+    "filebrowser": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "nodePort": {
+          "type": "integer"
+        }
+      },
+      "required": ["image", "enabled", "nodePort"]
+    },
+    "dydns": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "image": {
+          "type": "string"
+        },
+        "backoffLimit": {
+          "type": "number"
+        },
+        "activeDeadlineSeconds": {
+          "type": "number"
+        },
+        "script": {
+          "type": "string"
+        },
+        "schedule": {
+          "type": "string"
+        },
+        "env": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": ["name"]
+          }
+        },
+        "secretEnv": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          }
+        },
+        "hooks": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": ["enabled"]
+        }
+      },
+      "required": [
+        "image",
+        "script",
+        "schedule",
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": ["factorio", "filebrowser"]
+}

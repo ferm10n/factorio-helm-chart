@@ -1,0 +1,16 @@
+{{- if .Values.filebrowser.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "factorio.fullname" . }}-filebrowser
+  labels:
+    {{- include "factorio.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      name: filebrowser
+  selector:
+    app: {{ include "factorio.name" . }}
+{{- end }}
