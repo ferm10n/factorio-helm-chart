@@ -1,5 +1,4 @@
 {{- if .Values.factorio.persistence.create.enabled }}
-{{ required "value for factorio.persistence.create.storageClass is required" .Values.factorio.persistence.create.storageClass }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -12,8 +11,5 @@ spec:
   resources:
     requests:
       storage: {{ .Values.factorio.persistence.create.size }}
-
-  {{- if .Values.factorio.persistence.create.storageClass }}
-  storageClassName: {{ .Values.factorio.persistence.create.storageClass }}
-  {{- end }}
+  storageClassName: {{ required "value for factorio.persistence.create.storageClass is required" .Values.factorio.persistence.create.storageClass }}
 {{- end }}

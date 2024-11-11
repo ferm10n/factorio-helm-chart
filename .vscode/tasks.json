@@ -4,7 +4,7 @@
     {
       "label": "Helm Deploy/Upgrade",
       "type": "shell",
-      "command": "helm upgrade --install factorio ./",
+      "command": "helm upgrade --install factorio chart",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -14,7 +14,7 @@
     {
       "label": "Helm Template",
       "type": "shell",
-      "command": "helm template --debug factorio ./ | code -",
+      "command": "helm template --debug factorio chart | code -",
       "group": {
         "kind": "build",
         "isDefault": false
