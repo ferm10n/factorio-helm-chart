@@ -17,4 +17,4 @@ spec:
       nodePort: {{ .Values.factorio.service.nodePorts.rcon }}
       name: factorio-rcon
   selector:
-    app: {{ include "factorio.name" . }}
+    app: {{ include "factorio.name" . }}-server
