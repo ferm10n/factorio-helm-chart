@@ -1,6 +1,31 @@
 # factorio server helm chart
 
-setup the configuration in a `values.custom.yaml` and do:
+## helm chart features
+
+- factorio ports (NodePorts, this is mainly intended for a single machine cluster)
+  - game server: 31088
+  - rcon (?): 30261
+- dydns cronjob
+  - by default uses a command that works with namecheap domains (maybe others too, idk)
+    - command based on: https://gist.github.com/dalhundal/89159b3f032588586e91
+  - configurable command, image, and schedule
+    - default schedule is every 6 hours
+  - disable by removing `dydns` values
+  - also runs on chart install/upgrade
+    - disable by setting `dydns.hooks.enabled` to `false`
+- filebrowser
+  - Easily deploy mods and upload and download saves through a web interface
+  - No authentication, so I made it not normally accessible. Access with `kubectl port-forward ...` or use the vscode task
+  - disable by setting `filebrowser.enabled` to `false`
+- persistent storage
+  - can use an existing PVC (with `factorio.persistence.pvcName`), or allow the chart to create one, given a `storageClass`
+  - allocates 2Gi by default when creating the PVC
+
+see [values.schema.json](chart/values.schema.json) for all configuration options
+
+## usage
+
+setup the configuration in a [`values.custom.yaml`](#valuescustomyaml) and do:
 
 ```sh
 helm upgrade --install -f values.custom.yaml factorio oci://ghcr.io/ferm10n/factorio-helm-chart/charts/factorio
@@ -8,15 +33,9 @@ helm upgrade --install -f values.custom.yaml factorio oci://ghcr.io/ferm10n/fact
 
 TIP: The factorio server will try to load the latest save it can find, or generate one if it can't find it, and it also saves the loaded map on exit. You'll probably want to scale the deployment to 0, then upload the save with filebrowser so you can control what the latest save is after you scale it back up to 1.
 
-see [values.schema.json](chart/values.schema.json) for all configuration options
+connect your factorio game client to something like `factorio.mysite.com:31088`
 
-- NodePorts are used, this is mainly intended for a single machine cluster
-  - ports are different because of NodePort range limitations. Connect your factorio game client to something like `factorio.mysite.com:31088`
-    - this port is configurable
-  - connect to the game server on port `31088`
-  - connect to rcon (?) on port `30261`
-
-PRs welcome! I'm relatively new to helm charts so I'm eager to learn more.
+> PRs welcome! I'm relatively new to helm charts so I'm eager to learn more.
 
 ## values.custom.yaml
 
@@ -37,24 +56,6 @@ dydns: # config for dydns
   secretEnv:
     DYDNS_PASSWORD: insertapitokenhere
 ```
-
-## helm chart features
-
-- dydns cronjob
-  - by default uses a command that works with namecheap domains (maybe others too, idk)
-    - command based on: https://gist.github.com/dalhundal/89159b3f032588586e91
-  - configurable command, image, and schedule
-    - default schedule is every 6 hours
-  - disable by removing `dydns` values
-  - also runs on chart install/upgrade
-    - disable by setting `dydns.hooks.enabled` to `false`
-- filebrowser
-  - Easily deploy mods and upload and download saves through a web interface
-  - No authentication, so I made it not normally accessible. Access with `kubectl port-forward ...` or use the vscode task
-  - disable by setting `filebrowser.enabled` to `false`
-- persistent storage
-  - can use an existing PVC (with `factorio.persistence.pvcName`), or allow the chart to create one, given a `storageClass`
-  - allocates 2Gi by default when creating the PVC
 
 ## project features
 
